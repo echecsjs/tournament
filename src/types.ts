@@ -56,11 +56,7 @@ interface TournamentSnapshot {
 
 type PairingSystem = (players: Player[], games: Game[][]) => PairingResult;
 
-type Tiebreak = (
-  playerId: string,
-  games: Game[][],
-  players: Player[],
-) => number;
+type Tiebreak = (player: string, games: Game[][], players: Player[]) => number;
 
 export type {
   AccelerationMethod,
