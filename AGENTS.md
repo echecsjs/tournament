@@ -84,20 +84,72 @@ pnpm lint && pnpm test && pnpm build
 
 ---
 
+## Types
+
+The `Game` type carries an optional `kind?: GameKind` field to classify unplayed
+rounds:
+
+```typescript
+type GameKind = 'forfeit' | 'normal' | 'rated' | 'unrated';
+
+interface Game {
+  black: string;
+  kind?: GameKind;
+  result: Result;
+  white: string;
+}
+```
+
+`Pairing` and `Bye` use `black`/`white`/`player` (plain string ids, not nested
+objects):
+
+```typescript
+interface Pairing {
+  black: string;
+  white: string;
+}
+
+interface Bye {
+  player: string;
+}
+```
+
+`Standing` uses `player` (not `playerId`):
+
+```typescript
+interface Standing {
+  player: string;
+  rank: number;
+  score: number;
+  tiebreaks: number[];
+}
+```
+
 ## Unified Pairing Interface
 
 The `Tournament` class accepts any function conforming to `PairingSystem`:
 
 ```typescript
-type PairingSystem = (
-  players: Player[],
-  games: Game[],
-  round: number,
-) => PairingResult;
+type PairingSystem = (players: Player[], games: Game[][]) => PairingResult;
 ```
 
 All pairing functions in `@echecs/swiss` and `@echecs/round-robin` conform to
 this interface.
+
+## Tiebreak Signature
+
+Tiebreak functions have this signature:
+
+```typescript
+type Tiebreak = (
+  playerId: string,
+  games: Game[][],
+  players: Player[],
+) => number;
+```
+
+Pass an ordered array of tiebreak functions to
+`tournament.standings(tiebreaks)`.
 
 ---
 

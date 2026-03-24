@@ -27,7 +27,7 @@ npm install @echecs/tournament
 ```typescript
 import { Tournament } from '@echecs/tournament';
 import { dutch } from '@echecs/swiss';
-import type { Player } from '@echecs/tournament';
+import type { Game, GameKind, Player, Tiebreak } from '@echecs/tournament';
 
 const players: Player[] = [
   { id: 'alice', rating: 2100 },
@@ -44,18 +44,19 @@ const tournament = new Tournament({
 
 // Round 1
 const round1 = tournament.pairRound();
-// round1.pairings = [{ whiteId: 'alice', blackId: 'carol' }, ...]
+// round1.pairings = [{ black: 'carol', white: 'alice' }, ...]
+// round1.byes    = [{ player: 'dave' }]
 
-tournament.recordResult({ whiteId: 'alice', blackId: 'carol', result: 1 });
-tournament.recordResult({ whiteId: 'bob', blackId: 'dave', result: 0.5 });
+tournament.recordResult({ black: 'carol', result: 1, white: 'alice' });
+tournament.recordResult({ black: 'dave', result: 0.5, white: 'bob' });
 
 // Round 2
 const round2 = tournament.pairRound();
 // ...record results...
 
-// Standings
+// Standings (no tiebreaks)
 const table = tournament.standings();
-// [{ playerId: 'alice', rank: 1, score: 2, tiebreaks: [] }, ...]
+// [{ player: 'alice', rank: 1, score: 2, tiebreaks: [] }, ...]
 ```
 
 ## API
@@ -67,13 +68,13 @@ class Tournament {
   constructor(options: TournamentOptions);
 
   pairRound(): PairingResult;
-  recordResult(game: Omit<Game, 'round'>): void;
+  recordResult(game: Game): void;
   standings(tiebreaks?: Tiebreak[]): Standing[];
 
   get currentRound(): number;
-  get games(): readonly Game[];
+  get games(): Game[][];
   get isComplete(): boolean;
-  get players(): readonly Player[];
+  get players(): Player[];
   get rounds(): number;
 
   toJSON(): TournamentSnapshot;
@@ -91,7 +92,7 @@ Creates a new tournament.
 
 ```typescript
 interface TournamentOptions {
-  acceleration?: AccelerationMethod; // e.g. bakuAcceleration()
+  acceleration?: AccelerationMethod; // e.g. bakuAcceleration(players)
   pairingSystem: PairingSystem; // e.g. dutch, roundRobin
   players: Player[]; // all participants
   rounds: number; // total number of rounds
@@ -110,34 +111,45 @@ unrecorded results.
 
 #### `recordResult(game)`
 
-Records a game result for the current round. The `round` field is set
-automatically — pass the game without it.
+Records a game result for the current round.
 
 ```typescript
 tournament.recordResult({
-  whiteId: 'alice',
-  blackId: 'bob',
+  black: 'carol',
   result: 1, // 1 = white wins, 0.5 = draw, 0 = black wins
+  white: 'alice',
 });
+```
+
+The optional `kind?: GameKind` field classifies the game type:
+
+```typescript
+type GameKind = 'forfeit' | 'normal' | 'rated' | 'unrated';
 ```
 
 Throws `RangeError` if the players don't match any pairing in the current round.
 
 #### `standings(tiebreaks?)`
 
-Returns players ranked by score, with optional tiebreaks applied in order.
+Returns players ranked by score, with optional tiebreaks applied in order. Each
+tiebreak function receives `(playerId, games, players)` and returns a number.
 
 ```typescript
-import { buchholz, sonnebornBerger } from '@echecs/swiss';
+import { buchholz } from '@echecs/buchholz';
+import { sonnebornBerger } from '@echecs/sonneborn-berger';
 
 const table = tournament.standings([buchholz, sonnebornBerger]);
-// [{ playerId: 'alice', rank: 1, score: 2.5, tiebreaks: [7.5, 6.25] }, ...]
+// [{ player: 'alice', rank: 1, score: 2.5, tiebreaks: [7.5, 6.25] }, ...]
 ```
 
-Tiebreak functions have the signature:
+Tiebreak functions conform to:
 
 ```typescript
-type Tiebreak = (playerId: string, players: Player[], games: Game[]) => number;
+type Tiebreak = (
+  playerId: string,
+  games: Game[][],
+  players: Player[],
+) => number;
 ```
 
 #### `toJSON()` / `fromJSON()`
@@ -154,7 +166,7 @@ const restored = Tournament.fromJSON(JSON.parse(json), dutch);
 const nextRound = restored.pairRound();
 ```
 
-### `bakuAcceleration()`
+### `bakuAcceleration(players)`
 
 ```typescript
 function bakuAcceleration(players: Player[]): AccelerationMethod;
@@ -194,11 +206,7 @@ or reflected in standings.
 Any function matching the `PairingSystem` signature works:
 
 ```typescript
-type PairingSystem = (
-  players: Player[],
-  games: Game[],
-  round: number,
-) => PairingResult;
+type PairingSystem = (players: Player[], games: Game[][]) => PairingResult;
 ```
 
 | Package                                                                    | Functions                                                       | FIDE Rules                         |
@@ -215,21 +223,23 @@ interface Player {
 }
 
 interface Game {
-  blackId: string;
+  black: string;
+  kind?: GameKind; // optional: classifies unplayed rounds
   result: Result;
-  round: number;
-  whiteId: string;
+  white: string;
 }
+
+type GameKind = 'forfeit' | 'normal' | 'rated' | 'unrated';
 
 type Result = 0 | 0.5 | 1;
 
 interface Pairing {
-  blackId: string;
-  whiteId: string;
+  black: string;
+  white: string;
 }
 
 interface Bye {
-  playerId: string;
+  player: string;
 }
 
 interface PairingResult {
@@ -238,15 +248,22 @@ interface PairingResult {
 }
 
 interface Standing {
-  playerId: string;
+  player: string;
   rank: number;
   score: number;
   tiebreaks: number[];
 }
+
+type Tiebreak = (
+  playerId: string,
+  games: Game[][],
+  players: Player[],
+) => number;
 ```
 
 ## FIDE References
 
+- [C.07 Play-Off and Tie-Break Regulations](https://handbook.fide.com/chapter/TieBreakRegulations032026)
 - [C.04.7 Baku Acceleration](https://handbook.fide.com/chapter/C0407202602)
 
 ## License
