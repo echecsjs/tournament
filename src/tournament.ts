@@ -212,7 +212,7 @@ class Tournament {
       const vp = this.#acceleration.virtualPoints(player, round, this.#rounds);
       if (vp > 0) {
         virtualGames.push({
-          black: '',
+          black: player.id,
           result: vp as Result,
           white: player.id,
         });
