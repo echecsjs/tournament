@@ -1,4 +1,10 @@
-type GameKind = 'forfeit' | 'normal' | 'rated' | 'unrated';
+type GameKind =
+  | 'forfeit-loss'
+  | 'forfeit-win'
+  | 'full-bye'
+  | 'half-bye'
+  | 'pairing-bye'
+  | 'zero-bye';
 
 type Result = 0 | 0.5 | 1;
 
