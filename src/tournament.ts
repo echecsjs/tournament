@@ -57,6 +57,11 @@ class Tournament {
     return this.#rounds;
   }
 
+  clearResult(round: number, white: string, black: string): void {
+    const { index, roundGames } = this.#findGame(round, white, black);
+    roundGames.splice(index, 1);
+  }
+
   pairRound(): PairingResult {
     if (this.#currentRound >= this.#rounds) {
       throw new RangeError('tournament is complete');
@@ -79,6 +84,29 @@ class Tournament {
     this.#roundPairings.set(this.#currentRound, result);
     this.#games.push([]);
     return result;
+  }
+
+  updateResult(
+    round: number,
+    game: {
+      black: string;
+      kind?: GameKind;
+      result: Result;
+      white: string;
+    },
+  ): void {
+    this.#validateKind(game.kind, game.result);
+    const { index, roundGames } = this.#findGame(round, game.white, game.black);
+
+    const existing = roundGames[index];
+    if (existing) {
+      roundGames[index] = {
+        black: existing.black,
+        kind: game.kind,
+        result: game.result,
+        white: existing.white,
+      };
+    }
   }
 
   recordResult(game: {
@@ -106,6 +134,8 @@ class Tournament {
         `no pairing found for ${game.white} vs ${game.black}`,
       );
     }
+
+    this.#validateKind(game.kind, game.result);
 
     const currentRoundGames = this.#games[this.#currentRound - 1];
     if (currentRoundGames) {
@@ -203,6 +233,34 @@ class Tournament {
     return tournament;
   }
 
+  #findGame(
+    round: number,
+    white: string,
+    black: string,
+  ): { index: number; roundGames: Game[] } {
+    if (round < 1 || round > this.#currentRound) {
+      throw new RangeError('invalid round number');
+    }
+
+    const roundGames = this.#games[round - 1];
+    if (!roundGames || roundGames.length === 0) {
+      throw new RangeError(`no results recorded for round ${round}`);
+    }
+
+    const index = roundGames.findIndex(
+      (g) =>
+        (g.white === white && g.black === black) ||
+        (g.white === black && g.black === white),
+    );
+    if (index === -1) {
+      throw new RangeError(
+        `no result found for ${white} vs ${black} in round ${round}`,
+      );
+    }
+
+    return { index, roundGames };
+  }
+
   #buildVirtualGames(round: number): Game[] {
     if (!this.#acceleration) {
       return [];
@@ -227,6 +285,28 @@ class Tournament {
       return false;
     }
     return (this.#games[round - 1]?.length ?? 0) >= pairings.pairings.length;
+  }
+
+  #validateKind(kind: GameKind | undefined, result: Result): void {
+    if (kind === undefined) {
+      return;
+    }
+
+    const expectedResults: Record<GameKind, Result> = {
+      'forfeit-loss': 0,
+      'forfeit-win': 1,
+      'full-bye': 1,
+      'half-bye': 0.5,
+      'pairing-bye': 1,
+      'zero-bye': 0,
+    };
+
+    const expected = expectedResults[kind];
+    if (result !== expected) {
+      throw new RangeError(
+        `result ${result} is inconsistent with kind '${kind}'`,
+      );
+    }
   }
 }
 

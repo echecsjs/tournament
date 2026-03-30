@@ -67,9 +67,11 @@ const table = tournament.standings();
 class Tournament {
   constructor(options: TournamentOptions);
 
+  clearResult(round: number, white: string, black: string): void;
   pairRound(): PairingResult;
   recordResult(game: Game): void;
   standings(tiebreaks?: Tiebreak[]): Standing[];
+  updateResult(round: number, game: Game): void;
 
   get currentRound(): number;
   get games(): Game[][];
@@ -109,6 +111,21 @@ a `PairingResult` with pairings and byes.
 Throws `RangeError` if the tournament is complete or the current round has
 unrecorded results.
 
+#### `clearResult(round, white, black)`
+
+Removes a previously recorded result, identified by round number and player
+pair. The lookup checks both color orderings, so the caller can pass `white` and
+`black` in either order.
+
+```typescript
+tournament.clearResult(1, 'alice', 'carol');
+```
+
+After clearing, the round becomes incomplete and the pairing can be re-recorded
+via `recordResult`.
+
+Throws `RangeError` if the round is invalid or no matching result exists.
+
 #### `recordResult(game)`
 
 Records a game result for the current round.
@@ -121,13 +138,47 @@ tournament.recordResult({
 });
 ```
 
-The optional `kind?: GameKind` field classifies the game type:
+The optional `kind?: GameKind` field classifies the game type. When provided,
+the result must be consistent with the kind (see
+[GameKind validation](#gamekind-validation) below).
 
 ```typescript
-type GameKind = 'forfeit' | 'normal' | 'rated' | 'unrated';
+tournament.recordResult({
+  black: 'carol',
+  kind: 'forfeit-win',
+  result: 1,
+  white: 'alice',
+});
 ```
 
-Throws `RangeError` if the players don't match any pairing in the current round.
+Throws `RangeError` if the players don't match any pairing in the current round,
+or if `kind` and `result` are inconsistent.
+
+#### `updateResult(round, game)`
+
+Replaces an existing result in any round. The game is identified by the
+`white`/`black` player pair (checked in both orderings). The stored game retains
+its original color assignment.
+
+```typescript
+// Change round 1 result from white-wins to draw
+tournament.updateResult(1, {
+  black: 'carol',
+  result: 0.5,
+  white: 'alice',
+});
+
+// Add a kind to an existing result
+tournament.updateResult(1, {
+  black: 'carol',
+  kind: 'forfeit-win',
+  result: 1,
+  white: 'alice',
+});
+```
+
+Throws `RangeError` if the round is invalid, no matching result exists, or
+`kind` and `result` are inconsistent.
 
 #### `standings(tiebreaks?)`
 
@@ -229,7 +280,13 @@ interface Game {
   white: string;
 }
 
-type GameKind = 'forfeit' | 'normal' | 'rated' | 'unrated';
+type GameKind =
+  | 'forfeit-loss'
+  | 'forfeit-win'
+  | 'full-bye'
+  | 'half-bye'
+  | 'pairing-bye'
+  | 'zero-bye';
 
 type Result = 0 | 0.5 | 1;
 
@@ -260,6 +317,22 @@ type Tiebreak = (
   players: Player[],
 ) => number;
 ```
+
+## GameKind Validation
+
+When `kind` is provided in `recordResult` or `updateResult`, the `result` must
+match. Mismatches throw `RangeError`.
+
+| `kind`         | Required `result` | FIDE ref    |
+| -------------- | ----------------- | ----------- |
+| `forfeit-win`  | `1`               | Art. 16.2.2 |
+| `forfeit-loss` | `0`               | Art. 16.2.4 |
+| `full-bye`     | `1`               | —           |
+| `half-bye`     | `0.5`             | Art. 16.2.5 |
+| `pairing-bye`  | `1`               | Art. 16.2.1 |
+| `zero-bye`     | `0`               | Art. 16.2.3 |
+
+When `kind` is omitted, any result is accepted.
 
 ## FIDE References
 
