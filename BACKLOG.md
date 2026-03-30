@@ -1,9 +1,15 @@
 # Backlog
 
-Last updated: 2026-03-29
+Last updated: 2026-03-30
 
 ## Medium
 
-- [ ] `updateResult` API — replace a recorded game result without appending.
-- [ ] `clearResult` API — undo a recorded result.
-- [ ] `GameKind` support — distinguish forfeits from regular results.
+- [ ] Fix README — imports non-existent `dutch` from `@echecs/swiss` (should be
+      `pair`); Compatible Pairing Systems table lists wrong function names;
+      `GameKind` type definition may be stale.
+
+## Completed
+
+- [x] `updateResult` API — replace a recorded game result without appending.
+- [x] `clearResult` API — undo a recorded result.
+- [x] `GameKind` support — distinguish forfeits from regular results.
