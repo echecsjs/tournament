@@ -12,6 +12,32 @@ import type {
   TournamentSnapshot,
 } from './types.js';
 
+/**
+ * Stateful chess tournament orchestrator. Drives any pairing system through a
+ * common lifecycle: create, pair, record results, standings, repeat.
+ *
+ * The pairing system is injected as a function parameter — the consumer
+ * provides it from `@echecs/swiss`, `@echecs/round-robin`, or a custom
+ * implementation.
+ *
+ * @example
+ * ```typescript
+ * import { Tournament } from '@echecs/tournament';
+ * import { dutch } from '@echecs/swiss';
+ *
+ * const t = new Tournament({
+ *   pairingSystem: dutch,
+ *   players: [{ id: 'alice' }, { id: 'bob' }, { id: 'carol' }, { id: 'dave' }],
+ *   rounds: 3,
+ * });
+ *
+ * const r1 = t.pairRound();
+ * for (const p of r1.pairings) {
+ *   t.recordResult({ black: p.black, result: 1, white: p.white });
+ * }
+ * const standings = t.standings();
+ * ```
+ */
 class Tournament {
   readonly #acceleration?: AccelerationMethod;
   #currentRound = 0;
@@ -21,6 +47,12 @@ class Tournament {
   #roundPairings = new Map<number, PairingResult>();
   readonly #rounds: number;
 
+  /**
+   * Creates a new tournament.
+   *
+   * @param options - Tournament configuration.
+   * @throws {RangeError} If fewer than 2 players or fewer than 1 round.
+   */
   constructor(options: TournamentOptions) {
     if (options.players.length < 2) {
       throw new RangeError('at least 2 players are required');
@@ -34,14 +66,17 @@ class Tournament {
     this.#rounds = options.rounds;
   }
 
+  /** The current round number (1-based), or 0 if no round has been paired yet. */
   get currentRound(): number {
     return this.#currentRound;
   }
 
+  /** All recorded games, grouped by round. Returns a defensive copy. */
   get games(): readonly (readonly Game[])[] {
     return this.#games.map((r) => [...r]);
   }
 
+  /** Whether all rounds have been paired and all results recorded. */
   get isComplete(): boolean {
     return (
       this.#currentRound >= this.#rounds &&
@@ -49,19 +84,40 @@ class Tournament {
     );
   }
 
+  /** All tournament participants. Returns a defensive copy. */
   get players(): readonly Player[] {
     return [...this.#players];
   }
 
+  /** Total number of rounds in the tournament. */
   get rounds(): number {
     return this.#rounds;
   }
 
+  /**
+   * Removes a previously recorded result from the specified round. The game is
+   * identified by the player pair (checked in both color orderings).
+   *
+   * After clearing, the round becomes incomplete and the pairing can be
+   * re-recorded via {@link recordResult}.
+   *
+   * @param round - The 1-based round number.
+   * @param white - One of the two player identifiers.
+   * @param black - The other player identifier.
+   * @throws {RangeError} If the round is invalid or no matching result exists.
+   */
   clearResult(round: number, white: string, black: string): void {
     const { index, roundGames } = this.#findGame(round, white, black);
     roundGames.splice(index, 1);
   }
 
+  /**
+   * Generates pairings for the next round using the injected pairing system.
+   *
+   * @returns The pairings and byes for the new round.
+   * @throws {RangeError} If the tournament is complete or the current round has
+   *   unrecorded results.
+   */
   pairRound(): PairingResult {
     if (this.#currentRound >= this.#rounds) {
       throw new RangeError('tournament is complete');
@@ -86,6 +142,16 @@ class Tournament {
     return result;
   }
 
+  /**
+   * Replaces an existing result in any round. The game is identified by the
+   * `white`/`black` player pair (checked in both orderings). The stored game
+   * retains its original color assignment.
+   *
+   * @param round - The 1-based round number.
+   * @param game - The updated game data.
+   * @throws {RangeError} If the round is invalid, no matching result exists,
+   *   or `kind` and `result` are inconsistent.
+   */
   updateResult(
     round: number,
     game: {
@@ -109,6 +175,16 @@ class Tournament {
     }
   }
 
+  /**
+   * Records a game result for the current round.
+   *
+   * When `kind` is provided, the `result` must be consistent with it (e.g.
+   * `forfeit-win` requires `result: 1`).
+   *
+   * @param game - The game result to record.
+   * @throws {RangeError} If no round has been paired, the players don't match
+   *   any pairing, or `kind` and `result` are inconsistent.
+   */
   recordResult(game: {
     black: string;
     kind?: GameKind;
@@ -143,6 +219,16 @@ class Tournament {
     }
   }
 
+  /**
+   * Returns players ranked by score descending, with optional tiebreaks
+   * applied in order. Tied players (same score and all tiebreak values)
+   * share the same rank.
+   *
+   * @param tiebreaks - Ordered array of tiebreak functions. Each receives
+   *   `(playerId, games, players)` and returns a number. Higher values rank
+   *   higher.
+   * @returns Sorted standings array.
+   */
   standings(tiebreaks: Tiebreak[] = []): Standing[] {
     const results = this.#players.map((player) => {
       let score = 0;
@@ -200,6 +286,12 @@ class Tournament {
     return results;
   }
 
+  /**
+   * Serializes the tournament state to a plain object suitable for
+   * `JSON.stringify`.
+   *
+   * @returns A serializable snapshot of the tournament.
+   */
   toJSON(): TournamentSnapshot {
     const roundPairings: Record<string, PairingResult> = {};
     for (const [round, pairings] of this.#roundPairings) {
@@ -214,6 +306,15 @@ class Tournament {
     };
   }
 
+  /**
+   * Restores a tournament from a serialized snapshot. The pairing system
+   * function must be re-provided since functions are not JSON-serializable.
+   *
+   * @param snapshot - A snapshot previously returned by {@link toJSON}.
+   * @param pairingSystem - The pairing function to use for future rounds.
+   * @param acceleration - Optional acceleration method.
+   * @returns A restored Tournament instance.
+   */
   static fromJSON(
     snapshot: TournamentSnapshot,
     pairingSystem: PairingSystem,
