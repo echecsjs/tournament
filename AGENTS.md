@@ -6,8 +6,8 @@ orchestrator for any FIDE pairing system.
 See the root `AGENTS.md` for workspace-wide conventions (package manager,
 TypeScript settings, formatting, naming, testing, ESLint rules).
 
-**Backlog:** See [`BACKLOG.md`](BACKLOG.md) for pending work items. Update it
-after completing any work.
+**Backlog:** tracked in
+[GitHub Issues](https://github.com/mormubis/tournament/issues).
 
 ---
 
