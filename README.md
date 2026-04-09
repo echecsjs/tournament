@@ -73,11 +73,11 @@ class Tournament {
   updateResult(round: number, game: Game): void;
 
   get currentRound(): number;
-  get games(): Game[][];
+  get games(): readonly (readonly Game[])[];
   get isComplete(): boolean;
-  get players(): Player[];
+  get players(): readonly Player[];
   get rounds(): number;
-  get tiebreaks(): string[];
+  get tiebreaks(): readonly string[];
 
   toJSON(): TournamentSnapshot;
   static fromJSON(
@@ -325,6 +325,23 @@ type Tiebreak = (
   games: Game[][],
   players: Player[],
 ) => number;
+
+type Result = 0 | 0.5 | 1;
+
+type PairingSystem = (players: Player[], games: Game[][]) => PairingResult;
+
+interface AccelerationMethod {
+  virtualPoints: (player: Player, round: number, totalRounds: number) => number;
+}
+
+interface TournamentSnapshot {
+  currentRound: number;
+  games: Game[][];
+  players: Player[];
+  roundPairings: Record<string, PairingResult>;
+  rounds: number;
+  tiebreaks?: string[];
+}
 ```
 
 ## GameKind Validation

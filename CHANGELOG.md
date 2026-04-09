@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.1.1 — 2026-04-09
+
+### Fixed
+
+- Corrected getter return types to `readonly` (`games`, `players`, `tiebreaks`).
+- Documented `TournamentSnapshot`, `AccelerationMethod`, `PairingSystem`, and
+  `Result` types.
+
 ## 2.1.0 — 2026-03-30
 
 ### Added
