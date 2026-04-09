@@ -3,6 +3,8 @@
 Agent guidance for the `@echecs/tournament` package — stateful chess tournament
 orchestrator for any FIDE pairing system.
 
+**See also:** [`REFERENCES.md`](REFERENCES.md) | [`SPEC.md`](SPEC.md)
+
 See the root `AGENTS.md` for workspace-wide conventions (package manager,
 TypeScript settings, formatting, naming, testing, ESLint rules).
 
@@ -136,14 +138,15 @@ interface Standing {
 
 ## Unified Pairing Interface
 
-The `Tournament` class accepts any function conforming to `PairingSystem`:
+All pairing systems consumed by `Tournament` must conform to:
 
 ```typescript
-type PairingSystem = (players: Player[], games: Game[][]) => PairingResult;
+type PairingSystem = (
+  players: Standing[],
+  games: Game[][],
+  options?: object,
+) => { pairings: Pairing[]; byes: Bye[] };
 ```
-
-All pairing functions in `@echecs/swiss` and `@echecs/round-robin` conform to
-this interface.
 
 ## Tiebreak Signature
 

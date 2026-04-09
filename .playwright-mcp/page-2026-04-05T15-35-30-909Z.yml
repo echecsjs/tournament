@@ -1,0 +1,367 @@
+- generic [active] [ref=e1]:
+    - banner [ref=e2]:
+        - generic [ref=e3]:
+            - link "@echecs/tournament - v2.1.0" [ref=e4] [cursor=pointer]:
+                - /url: ../index.html
+            - button "Search" [ref=e5] [cursor=pointer]:
+                - img [ref=e6]
+    - generic [ref=e8]:
+        - generic [ref=e9]:
+            - generic [ref=e10]:
+                - list "Breadcrumb" [ref=e11]:
+                    - listitem [ref=e12]:
+                        - link "TournamentSnapshot" [ref=e13] [cursor=pointer]:
+                            - /url: ''
+                        - text: /
+                - heading "Interface TournamentSnapshot" [level=1] [ref=e14]
+            - paragraph [ref=e17]:
+                - text:
+                    Serializable snapshot of a tournament's state, returned by
+                - link "Tournament.toJSON" [ref=e18] [cursor=pointer]:
+                    - /url: ../classes/Tournament.html#tojson
+                - text: .
+            - generic [ref=e19]:
+                - text: 'interface TournamentSnapshot {'
+                - link "currentRound" [ref=e20] [cursor=pointer]:
+                    - /url: '#currentround'
+                - text: ': number;'
+                - link "games" [ref=e21] [cursor=pointer]:
+                    - /url: '#games'
+                - text: ':'
+                - link "Game" [ref=e22] [cursor=pointer]:
+                    - /url: Game.html
+                - text: '[][];'
+                - link "players" [ref=e23] [cursor=pointer]:
+                    - /url: '#players'
+                - text: ':'
+                - link "Player" [ref=e24] [cursor=pointer]:
+                    - /url: Player.html
+                - text: '[];'
+                - link "roundPairings" [ref=e25] [cursor=pointer]:
+                    - /url: '#roundpairings'
+                - text: ': Record<string,'
+                - link "PairingResult" [ref=e26] [cursor=pointer]:
+                    - /url: PairingResult.html
+                - text: '>;'
+                - link "rounds" [ref=e27] [cursor=pointer]:
+                    - /url: '#rounds'
+                - text: ': number;'
+                - link "tiebreaks" [ref=e28] [cursor=pointer]:
+                    - /url: '#tiebreaks'
+                - text: '?: string[];'
+                - text: '}'
+            - complementary [ref=e29]:
+                - list [ref=e30]:
+                    - listitem [ref=e31]:
+                        - text: Defined in
+                        - link "types.ts:103" [ref=e32] [cursor=pointer]:
+                            - /url: https://github.com/mormubis/tournament/blob/fee4a2f1a950821665cbc751d76080c75158bf44/src/types.ts#L103
+            - group [ref=e35]:
+                - generic "Index" [ref=e36] [cursor=pointer]:
+                    - img [ref=e37]
+                    - heading "Index" [level=5] [ref=e39]
+                - generic [ref=e41]:
+                    - heading "Properties" [level=3] [ref=e42]
+                    - generic [ref=e43]:
+                        - ? link "Property currentRound" [ref=e44]
+                            [cursor=pointer]
+                          : - /url: '#currentround'
+                            - img "Property" [ref=e45]
+                            - generic [ref=e47]:
+                                - text: current
+                                - text: Round
+                        - link "Property games" [ref=e48] [cursor=pointer]:
+                            - /url: '#games'
+                            - img "Property" [ref=e49]
+                            - generic [ref=e51]: games
+                        - link "Property players" [ref=e52] [cursor=pointer]:
+                            - /url: '#players'
+                            - img "Property" [ref=e53]
+                            - generic [ref=e55]: players
+                        - ? link "Property roundPairings" [ref=e56]
+                            [cursor=pointer]
+                          : - /url: '#roundpairings'
+                            - img "Property" [ref=e57]
+                            - generic [ref=e59]:
+                                - text: round
+                                - text: Pairings
+                        - link "Property rounds" [ref=e60] [cursor=pointer]:
+                            - /url: '#rounds'
+                            - img "Property" [ref=e61]
+                            - generic [ref=e63]: rounds
+                        - link "Property tiebreaks?" [ref=e64] [cursor=pointer]:
+                            - /url: '#tiebreaks'
+                            - img "Property" [ref=e65]
+                            - generic [ref=e67]: tiebreaks?
+            - group [ref=e68]:
+                - generic "Properties" [ref=e69] [cursor=pointer]:
+                    - img [ref=e70]
+                    - heading "Properties" [level=2] [ref=e72]
+                - generic [ref=e73]:
+                    - generic [ref=e74]:
+                        - heading "currentRound Permalink" [level=3] [ref=e75]:
+                            - generic [ref=e76]:
+                                - text: current
+                                - text: Round
+                            - link "Permalink" [ref=e77] [cursor=pointer]:
+                                - /url: '#currentround'
+                        - generic [ref=e78]: 'currentRound: number'
+                        - paragraph [ref=e80]:
+                            The current round number (1-based), or 0 if no round
+                            has been paired.
+                        - complementary [ref=e81]:
+                            - list [ref=e82]:
+                                - listitem [ref=e83]:
+                                    - text: Defined in
+                                    - ? link "types.ts:105" [ref=e84]
+                                        [cursor=pointer]
+                                      : - /url: https://github.com/mormubis/tournament/blob/fee4a2f1a950821665cbc751d76080c75158bf44/src/types.ts#L105
+                    - generic [ref=e85]:
+                        - heading "games Permalink" [level=3] [ref=e86]:
+                            - text: games
+                            - link "Permalink" [ref=e87] [cursor=pointer]:
+                                - /url: '#games'
+                        - generic [ref=e88]:
+                            - text: 'games:'
+                            - link "Game" [ref=e89] [cursor=pointer]:
+                                - /url: Game.html
+                            - text: '[][]'
+                        - paragraph [ref=e91]:
+                            All recorded games, grouped by round.
+                        - complementary [ref=e92]:
+                            - list [ref=e93]:
+                                - listitem [ref=e94]:
+                                    - text: Defined in
+                                    - ? link "types.ts:107" [ref=e95]
+                                        [cursor=pointer]
+                                      : - /url: https://github.com/mormubis/tournament/blob/fee4a2f1a950821665cbc751d76080c75158bf44/src/types.ts#L107
+                    - generic [ref=e96]:
+                        - heading "players Permalink" [level=3] [ref=e97]:
+                            - text: players
+                            - link "Permalink" [ref=e98] [cursor=pointer]:
+                                - /url: '#players'
+                        - generic [ref=e99]:
+                            - text: 'players:'
+                            - link "Player" [ref=e100] [cursor=pointer]:
+                                - /url: Player.html
+                            - text: '[]'
+                        - paragraph [ref=e102]: All tournament participants.
+                        - complementary [ref=e103]:
+                            - list [ref=e104]:
+                                - listitem [ref=e105]:
+                                    - text: Defined in
+                                    - ? link "types.ts:109" [ref=e106]
+                                        [cursor=pointer]
+                                      : - /url: https://github.com/mormubis/tournament/blob/fee4a2f1a950821665cbc751d76080c75158bf44/src/types.ts#L109
+                    - generic [ref=e107]:
+                        - ? heading "roundPairings Permalink" [level=3]
+                            [ref=e108]
+                          : - generic [ref=e109]:
+                                - text: round
+                                - text: Pairings
+                            - link "Permalink" [ref=e110] [cursor=pointer]:
+                                - /url: '#roundpairings'
+                        - generic [ref=e111]:
+                            - text: 'roundPairings: Record<string,'
+                            - link "PairingResult" [ref=e112] [cursor=pointer]:
+                                - /url: PairingResult.html
+                            - text: '>'
+                        - paragraph [ref=e114]:
+                            Pairings for each round, keyed by round number as a
+                            string.
+                        - complementary [ref=e115]:
+                            - list [ref=e116]:
+                                - listitem [ref=e117]:
+                                    - text: Defined in
+                                    - ? link "types.ts:111" [ref=e118]
+                                        [cursor=pointer]
+                                      : - /url: https://github.com/mormubis/tournament/blob/fee4a2f1a950821665cbc751d76080c75158bf44/src/types.ts#L111
+                    - generic [ref=e119]:
+                        - heading "rounds Permalink" [level=3] [ref=e120]:
+                            - text: rounds
+                            - link "Permalink" [ref=e121] [cursor=pointer]:
+                                - /url: '#rounds'
+                        - generic [ref=e122]: 'rounds: number'
+                        - paragraph [ref=e124]: Total number of rounds.
+                        - complementary [ref=e125]:
+                            - list [ref=e126]:
+                                - listitem [ref=e127]:
+                                    - text: Defined in
+                                    - ? link "types.ts:113" [ref=e128]
+                                        [cursor=pointer]
+                                      : - /url: https://github.com/mormubis/tournament/blob/fee4a2f1a950821665cbc751d76080c75158bf44/src/types.ts#L113
+                    - generic [ref=e129]:
+                        - ? heading "Optionaltiebreaks Permalink" [level=3]
+                            [ref=e130]
+                          : - code [ref=e131]: Optional
+                            - text: tiebreaks
+                            - link "Permalink" [ref=e132] [cursor=pointer]:
+                                - /url: '#tiebreaks'
+                        - generic [ref=e133]: 'tiebreaks?: string[]'
+                        - paragraph [ref=e135]:
+                            Optional ordered list of tiebreak identifiers.
+                        - complementary [ref=e136]:
+                            - list [ref=e137]:
+                                - listitem [ref=e138]:
+                                    - text: Defined in
+                                    - ? link "types.ts:115" [ref=e139]
+                                        [cursor=pointer]
+                                      : - /url: https://github.com/mormubis/tournament/blob/fee4a2f1a950821665cbc751d76080c75158bf44/src/types.ts#L115
+        - generic [ref=e140]:
+            - generic [ref=e141]:
+                - group [ref=e143]:
+                    - generic "Settings" [ref=e144] [cursor=pointer]:
+                        - img [ref=e145]
+                        - heading "Settings" [level=3] [ref=e147]
+                    - option "OS" [selected]
+                    - option "Light"
+                    - option "Dark"
+                - group [ref=e148]:
+                    - generic "On This Page" [ref=e149] [cursor=pointer]:
+                        - img [ref=e150]
+                        - heading "On This Page" [level=3] [ref=e152]
+                    - group [ref=e154]:
+                        - generic "Properties" [ref=e155] [cursor=pointer]:
+                            - img [ref=e156]
+                            - text: Properties
+                        - generic [ref=e158]:
+                            - ? link "Property currentRound" [ref=e159]
+                                [cursor=pointer]
+                              : - /url: '#currentround'
+                                - img "Property" [ref=e160]
+                                - generic [ref=e162]:
+                                    - text: current
+                                    - text: Round
+                            - link "Property games" [ref=e163] [cursor=pointer]:
+                                - /url: '#games'
+                                - img "Property" [ref=e164]
+                                - generic [ref=e166]: games
+                            - ? link "Property players" [ref=e167]
+                                [cursor=pointer]
+                              : - /url: '#players'
+                                - img "Property" [ref=e168]
+                                - generic [ref=e170]: players
+                            - ? link "Property roundPairings" [ref=e171]
+                                [cursor=pointer]
+                              : - /url: '#roundpairings'
+                                - img "Property" [ref=e172]
+                                - generic [ref=e174]:
+                                    - text: round
+                                    - text: Pairings
+                            - ? link "Property rounds" [ref=e175]
+                                [cursor=pointer]
+                              : - /url: '#rounds'
+                                - img "Property" [ref=e176]
+                                - generic [ref=e178]: rounds
+                            - ? link "Property tiebreaks" [ref=e179]
+                                [cursor=pointer]
+                              : - /url: '#tiebreaks'
+                                - img "Property" [ref=e180]
+                                - generic [ref=e182]: tiebreaks
+            - navigation [ref=e184]:
+                - ? link "@echecs/tournament - v2.1.0" [ref=e185]
+                    [cursor=pointer]
+                  : - /url: ../modules.html
+                - list [ref=e186]:
+                    - listitem [ref=e187]:
+                        - ? link "Function bakuAcceleration" [ref=e188]
+                            [cursor=pointer]
+                          : - /url: ../functions/bakuAcceleration.html
+                            - img "Function" [ref=e189]
+                            - generic [ref=e191]:
+                                - text: baku
+                                - text: Acceleration
+                    - listitem [ref=e192]:
+                        - link "Class Tournament" [ref=e193] [cursor=pointer]:
+                            - /url: ../classes/Tournament.html
+                            - img "Class" [ref=e194]
+                            - generic [ref=e196]: Tournament
+                    - listitem [ref=e197]:
+                        - ? link "Type Alias GameKind" [ref=e198]
+                            [cursor=pointer]
+                          : - /url: ../types/GameKind.html
+                            - img "Type Alias" [ref=e199]
+                            - generic [ref=e201]:
+                                - text: Game
+                                - text: Kind
+                    - listitem [ref=e202]:
+                        - link "Type Alias Result" [ref=e203] [cursor=pointer]:
+                            - /url: ../types/Result.html
+                            - img "Type Alias" [ref=e204]
+                            - generic [ref=e206]: Result
+                    - listitem [ref=e207]:
+                        - ? link "Interface AccelerationMethod" [ref=e208]
+                            [cursor=pointer]
+                          : - /url: ../interfaces/AccelerationMethod.html
+                            - img "Interface" [ref=e209]
+                            - generic [ref=e211]:
+                                - text: Acceleration
+                                - text: Method
+                    - listitem [ref=e212]:
+                        - link "Interface Bye" [ref=e213] [cursor=pointer]:
+                            - /url: ../interfaces/Bye.html
+                            - img "Interface" [ref=e214]
+                            - generic [ref=e216]: Bye
+                    - listitem [ref=e217]:
+                        - link "Interface Game" [ref=e218] [cursor=pointer]:
+                            - /url: ../interfaces/Game.html
+                            - img "Interface" [ref=e219]
+                            - generic [ref=e221]: Game
+                    - listitem [ref=e222]:
+                        - link "Interface Pairing" [ref=e223] [cursor=pointer]:
+                            - /url: ../interfaces/Pairing.html
+                            - img "Interface" [ref=e224]
+                            - generic [ref=e226]: Pairing
+                    - listitem [ref=e227]:
+                        - ? link "Interface PairingResult" [ref=e228]
+                            [cursor=pointer]
+                          : - /url: ../interfaces/PairingResult.html
+                            - img "Interface" [ref=e229]
+                            - generic [ref=e231]:
+                                - text: Pairing
+                                - text: Result
+                    - listitem [ref=e232]:
+                        - link "Interface Player" [ref=e233] [cursor=pointer]:
+                            - /url: ../interfaces/Player.html
+                            - img "Interface" [ref=e234]
+                            - generic [ref=e236]: Player
+                    - listitem [ref=e237]:
+                        - link "Interface Standing" [ref=e238] [cursor=pointer]:
+                            - /url: ../interfaces/Standing.html
+                            - img "Interface" [ref=e239]
+                            - generic [ref=e241]: Standing
+                    - listitem [ref=e242]:
+                        - ? link "Interface TournamentOptions" [ref=e243]
+                            [cursor=pointer]
+                          : - /url: ../interfaces/TournamentOptions.html
+                            - img "Interface" [ref=e244]
+                            - generic [ref=e246]:
+                                - text: Tournament
+                                - text: Options
+                    - listitem [ref=e247]:
+                        - ? link "Interface TournamentSnapshot" [ref=e248]
+                            [cursor=pointer]
+                          : - /url: ../interfaces/TournamentSnapshot.html
+                            - img "Interface" [ref=e249]
+                            - generic [ref=e251]:
+                                - text: Tournament
+                                - text: Snapshot
+                    - listitem [ref=e252]:
+                        - ? link "Type Alias PairingSystem" [ref=e253]
+                            [cursor=pointer]
+                          : - /url: ../types/PairingSystem.html
+                            - img "Type Alias" [ref=e254]
+                            - generic [ref=e256]:
+                                - text: Pairing
+                                - text: System
+                    - listitem [ref=e257]:
+                        - ? link "Type Alias Tiebreak" [ref=e258]
+                            [cursor=pointer]
+                          : - /url: ../types/Tiebreak.html
+                            - img "Type Alias" [ref=e259]
+                            - generic [ref=e261]: Tiebreak
+    - contentinfo [ref=e262]:
+        - paragraph [ref=e263]:
+            - text: Generated using
+            - link "TypeDoc" [ref=e264] [cursor=pointer]:
+                - /url: https://typedoc.org/

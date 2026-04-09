@@ -1,0 +1,814 @@
+- generic [active] [ref=e1]:
+    - banner [ref=e2]:
+        - generic [ref=e3]:
+            - link "@echecs/tournament - v2.1.0" [ref=e4] [cursor=pointer]:
+                - /url: index.html
+            - button "Search" [ref=e5] [cursor=pointer]:
+                - img [ref=e6]
+    - generic [ref=e8]:
+        - generic [ref=e9]:
+            - heading "@echecs/tournament - v2.1.0" [level=1] [ref=e11]
+            - generic [ref=e12]:
+                - heading "Tournament Permalink" [level=1] [ref=e13]:
+                    - text: Tournament
+                    - link "Permalink" [ref=e14] [cursor=pointer]:
+                        - /url: '#tournament'
+                - paragraph [ref=e15]:
+                    - link "npm" [ref=e16] [cursor=pointer]:
+                        - /url: https://www.npmjs.com/package/@echecs/tournament
+                        - img "npm" [ref=e17]
+                    - link "Test" [ref=e18] [cursor=pointer]:
+                        - /url: https://github.com/mormubis/tournament/actions/workflows/test.yml
+                        - img "Test" [ref=e19]
+                    - link "Coverage" [ref=e20] [cursor=pointer]:
+                        - /url: https://codecov.io/gh/mormubis/tournament
+                        - img "Coverage" [ref=e21]
+                    - 'link "License: MIT" [ref=e22] [cursor=pointer]':
+                        - /url: LICENSE
+                        - 'img "License: MIT" [ref=e23]'
+                - paragraph [ref=e24]:
+                    - strong [ref=e25]: Tournament
+                    - text:
+                        is a TypeScript library for orchestrating chess
+                        tournaments using any FIDE pairing system. It provides a
+                        stateful
+                    - code [ref=e26]: Tournament
+                    - text:
+                        class that manages the full lifecycle — pairing rounds,
+                        recording results, computing standings — and a
+                    - code [ref=e27]: bakuAcceleration()
+                    - text:
+                        function implementing FIDE C.04.7. Zero runtime
+                        dependencies.
+                - paragraph [ref=e28]:
+                    - text:
+                        The pairing system is injected as a function parameter.
+                        Bring your own from
+                    - link "@echecs/swiss" [ref=e29] [cursor=pointer]:
+                        - /url: https://www.npmjs.com/package/@echecs/swiss
+                        - code [ref=e30]: '@echecs/swiss'
+                    - text: ','
+                    - link "@echecs/round-robin" [ref=e31] [cursor=pointer]:
+                        - /url: https://www.npmjs.com/package/@echecs/round-robin
+                        - code [ref=e32]: '@echecs/round-robin'
+                    - text: ', or a custom implementation.'
+                - heading "Installation Permalink" [level=2] [ref=e33]:
+                    - text: Installation
+                    - link "Permalink" [ref=e34] [cursor=pointer]:
+                        - /url: '#installation'
+                - generic [ref=e35]:
+                    - code [ref=e36]: npm install @echecs/tournament
+                    - button "Copy" [ref=e37]
+                - heading "Quick Start Permalink" [level=2] [ref=e38]:
+                    - text: Quick Start
+                    - link "Permalink" [ref=e39] [cursor=pointer]:
+                        - /url: '#quick-start'
+                - generic [ref=e40]:
+                    - code [ref=e41]:
+                        - text:
+                            "import { Tournament } from '@echecs/tournament';"
+                        - text: "import { pair } from '@echecs/swiss/dutch';"
+                        - text:
+                            "import type { Game, GameKind, Player, Tiebreak }
+                            from '@echecs/tournament';"
+                        - text: 'const players: Player[] = ['
+                        - text: "{ id: 'alice', rating: 2100 },"
+                        - text: "{ id: 'bob', rating: 1950 },"
+                        - text: "{ id: 'carol', rating: 1870 },"
+                        - text: "{ id: 'dave', rating: 1820 },"
+                        - text: '];'
+                        - text: 'const tournament = new Tournament({'
+                        - text: 'pairingSystem: pair,'
+                        - text: players,
+                        - text: 'rounds: 3,'
+                        - text: '});'
+                        - text: // Round 1
+                        - text: const round1 = tournament.pairRound();
+                        - text:
+                            "// round1.pairings = [{ black: 'carol', white:
+                            'alice' }, ...]"
+                        - text: "// round1.byes = [{ player: 'dave' }]"
+                        - text:
+                            "tournament.recordResult({ black: 'carol', result:
+                            1, white: 'alice' });"
+                        - text:
+                            "tournament.recordResult({ black: 'dave', result:
+                            0.5, white: 'bob' });"
+                        - text: // Round 2
+                        - text: const round2 = tournament.pairRound();
+                        - text: // ...record results...
+                        - text: // Standings (no tiebreaks)
+                        - text: const table = tournament.standings();
+                        - text:
+                            "// [{ player: 'alice', rank: 1, score: 2,
+                            tiebreaks: [] }, ...]"
+                    - button "Copy" [ref=e42]
+                - heading "API Permalink" [level=2] [ref=e43]:
+                    - text: API
+                    - link "Permalink" [ref=e44] [cursor=pointer]:
+                        - /url: '#api'
+                - heading "Tournament Permalink" [level=3] [ref=e45]:
+                    - code [ref=e46]: Tournament
+                    - link "Permalink" [ref=e47] [cursor=pointer]:
+                        - /url: '#_'
+                - generic [ref=e48]:
+                    - code [ref=e49]:
+                        - text: 'class Tournament {'
+                        - text: 'constructor(options: TournamentOptions);'
+                        - text:
+                            'clearResult(round: number, white: string, black:
+                            string): void;'
+                        - text: 'pairRound(): PairingResult;'
+                        - text: 'recordResult(game: Game): void;'
+                        - text: 'standings(tiebreaks?: Tiebreak[]): Standing[];'
+                        - text: 'updateResult(round: number, game: Game): void;'
+                        - text: 'get currentRound(): number;'
+                        - text: 'get games(): Game[][];'
+                        - text: 'get isComplete(): boolean;'
+                        - text: 'get players(): Player[];'
+                        - text: 'get rounds(): number;'
+                        - text: 'get tiebreaks(): string[];'
+                        - text: 'toJSON(): TournamentSnapshot;'
+                        - text: static fromJSON(
+                        - text: 'snapshot: TournamentSnapshot,'
+                        - text: 'pairingSystem: PairingSystem,'
+                        - text: 'acceleration?: AccelerationMethod,'
+                        - text: '): Tournament;'
+                        - text: '}'
+                    - button "Copy" [ref=e50]
+                - heading "constructor(options) Permalink" [level=4] [ref=e51]:
+                    - code [ref=e52]: constructor(options)
+                    - link "Permalink" [ref=e53] [cursor=pointer]:
+                        - /url: '#_-1'
+                - paragraph [ref=e54]: Creates a new tournament.
+                - generic [ref=e55]:
+                    - code [ref=e56]:
+                        - text: 'interface TournamentOptions {'
+                        - text:
+                            'acceleration?: AccelerationMethod; // e.g.
+                            bakuAcceleration(players)'
+                        - text:
+                            'pairingSystem: PairingSystem; // e.g. pair from
+                            @echecs/swiss/dutch'
+                        - text: 'players: Player[]; // all participants'
+                        - text: 'rounds: number; // total number of rounds'
+                        - text:
+                            'tiebreaks?: string[]; // opaque IDs preserved
+                            through serialization'
+                        - text: '}'
+                    - button "Copy" [ref=e57]
+                - paragraph [ref=e58]:
+                    - text: Throws
+                    - code [ref=e59]: RangeError
+                    - text: if fewer than 2 players or fewer than 1 round.
+                - heading "pairRound() Permalink" [level=4] [ref=e60]:
+                    - code [ref=e61]: pairRound()
+                    - link "Permalink" [ref=e62] [cursor=pointer]:
+                        - /url: '#_-2'
+                - paragraph [ref=e63]:
+                    - text:
+                        Generates pairings for the next round using the injected
+                        pairing system. Returns a
+                    - code [ref=e64]: PairingResult
+                    - text: with pairings and byes.
+                - paragraph [ref=e65]:
+                    - text: Throws
+                    - code [ref=e66]: RangeError
+                    - text:
+                        if the tournament is complete or the current round has
+                        unrecorded results.
+                - ? heading "clearResult(round, white, black) Permalink"
+                    [level=4] [ref=e67]
+                  : - code [ref=e68]: clearResult(round, white, black)
+                    - link "Permalink" [ref=e69] [cursor=pointer]:
+                        - /url: '#_-3'
+                - paragraph [ref=e70]:
+                    - text:
+                        Removes a previously recorded result, identified by
+                        round number and player pair. The lookup checks both
+                        color orderings, so the caller can pass
+                    - code [ref=e71]: white
+                    - text: and
+                    - code [ref=e72]: black
+                    - text: in either order.
+                - generic [ref=e73]:
+                    - code [ref=e74]:
+                        tournament.clearResult(1, 'alice', 'carol');
+                    - button "Copy" [ref=e75]
+                - paragraph [ref=e76]:
+                    - text:
+                        After clearing, the round becomes incomplete and the
+                        pairing can be re-recorded via
+                    - code [ref=e77]: recordResult
+                    - text: .
+                - paragraph [ref=e78]:
+                    - text: Throws
+                    - code [ref=e79]: RangeError
+                    - text:
+                        if the round is invalid or no matching result exists.
+                - heading "recordResult(game) Permalink" [level=4] [ref=e80]:
+                    - code [ref=e81]: recordResult(game)
+                    - link "Permalink" [ref=e82] [cursor=pointer]:
+                        - /url: '#_-4'
+                - paragraph [ref=e83]:
+                    Records a game result for the current round.
+                - generic [ref=e84]:
+                    - code [ref=e85]:
+                        - text: 'tournament.recordResult({'
+                        - text: "black: 'carol',"
+                        - text:
+                            'result: 1, // 1 = white wins, 0.5 = draw, 0 = black
+                            wins'
+                        - text: "white: 'alice',"
+                        - text: '});'
+                    - button "Copy" [ref=e86]
+                - paragraph [ref=e87]:
+                    - text: The optional
+                    - code [ref=e88]: 'kind?: GameKind'
+                    - text:
+                        field classifies the game type. When provided, the
+                        result must be consistent with the kind (see
+                    - link "GameKind validation" [ref=e89] [cursor=pointer]:
+                        - /url: '#gamekind-validation'
+                    - text: below).
+                - generic [ref=e90]:
+                    - code [ref=e91]:
+                        - text: 'tournament.recordResult({'
+                        - text: "black: 'carol',"
+                        - text: "kind: 'forfeit-win',"
+                        - text: 'result: 1,'
+                        - text: "white: 'alice',"
+                        - text: '});'
+                    - button "Copy" [ref=e92]
+                - paragraph [ref=e93]:
+                    - text: Throws
+                    - code [ref=e94]: RangeError
+                    - text:
+                        if the players don't match any pairing in the current
+                        round, or if
+                    - code [ref=e95]: kind
+                    - text: and
+                    - code [ref=e96]: result
+                    - text: are inconsistent.
+                - ? heading "updateResult(round, game) Permalink" [level=4]
+                    [ref=e97]
+                  : - code [ref=e98]: updateResult(round, game)
+                    - link "Permalink" [ref=e99] [cursor=pointer]:
+                        - /url: '#_-5'
+                - paragraph [ref=e100]:
+                    - text:
+                        Replaces an existing result in any round. The game is
+                        identified by the
+                    - code [ref=e101]: white
+                    - text: /
+                    - code [ref=e102]: black
+                    - text:
+                        player pair (checked in both orderings). The stored game
+                        retains its original color assignment.
+                - generic [ref=e103]:
+                    - code [ref=e104]:
+                        - text: // Change round 1 result from white-wins to draw
+                        - text: 'tournament.updateResult(1, {'
+                        - text: "black: 'carol',"
+                        - text: 'result: 0.5,'
+                        - text: "white: 'alice',"
+                        - text: '});'
+                        - text: // Add a kind to an existing result
+                        - text: 'tournament.updateResult(1, {'
+                        - text: "black: 'carol',"
+                        - text: "kind: 'forfeit-win',"
+                        - text: 'result: 1,'
+                        - text: "white: 'alice',"
+                        - text: '});'
+                    - button "Copy" [ref=e105]
+                - paragraph [ref=e106]:
+                    - text: Throws
+                    - code [ref=e107]: RangeError
+                    - text:
+                        if the round is invalid, no matching result exists, or
+                    - code [ref=e108]: kind
+                    - text: and
+                    - code [ref=e109]: result
+                    - text: are inconsistent.
+                - ? heading "standings(tiebreaks?) Permalink" [level=4]
+                    [ref=e110]
+                  : - code [ref=e111]: standings(tiebreaks?)
+                    - link "Permalink" [ref=e112] [cursor=pointer]:
+                        - /url: '#_-6'
+                - paragraph [ref=e113]:
+                    - text:
+                        Returns players ranked by score, with optional tiebreaks
+                        applied in order. Each tiebreak function receives
+                    - code [ref=e114]: (playerId, games, players)
+                    - text: and returns a number.
+                - generic [ref=e115]:
+                    - code [ref=e116]:
+                        - text: "import { buchholz } from '@echecs/buchholz';"
+                        - text:
+                            "import { sonnebornBerger } from
+                            '@echecs/sonneborn-berger';"
+                        - text:
+                            const table = tournament.standings([buchholz,
+                            sonnebornBerger]);
+                        - text:
+                            "// [{ player: 'alice', rank: 1, score: 2.5,
+                            tiebreaks: [7.5, 6.25] }, ...]"
+                    - button "Copy" [ref=e117]
+                - paragraph [ref=e118]: 'Tiebreak functions conform to:'
+                - generic [ref=e119]:
+                    - code [ref=e120]:
+                        - text: type Tiebreak = (
+                        - text: 'playerId: string,'
+                        - text: 'games: Game[][],'
+                        - text: 'players: Player[],'
+                        - text: ) => number;
+                    - button "Copy" [ref=e121]
+                - ? heading "toJSON() / fromJSON() Permalink" [level=4]
+                    [ref=e122]
+                  : - code [ref=e123]: toJSON()
+                    - text: /
+                    - code [ref=e124]: fromJSON()
+                    - link "Permalink" [ref=e125] [cursor=pointer]:
+                        - /url: '#_-7'
+                - paragraph [ref=e126]:
+                    Serialize and restore tournament state. The pairing system
+                    function must be re-provided when restoring, since functions
+                    aren't JSON-serializable.
+                - generic [ref=e127]:
+                    - code [ref=e128]:
+                        - text: const snapshot = tournament.toJSON();
+                        - text: const json = JSON.stringify(snapshot);
+                        - text: // Later...
+                        - text:
+                            const restored =
+                            Tournament.fromJSON(JSON.parse(json), pair);
+                        - text: const nextRound = restored.pairRound();
+                    - button "Copy" [ref=e129]
+                - ? heading "bakuAcceleration(players) Permalink" [level=3]
+                    [ref=e130]
+                  : - code [ref=e131]: bakuAcceleration(players)
+                    - link "Permalink" [ref=e132] [cursor=pointer]:
+                        - /url: '#_-8'
+                - generic [ref=e133]:
+                    - code [ref=e134]:
+                        'function bakuAcceleration(players: Player[]):
+                        AccelerationMethod;'
+                    - button "Copy" [ref=e135]
+                - paragraph [ref=e136]:
+                    - text: Returns an
+                    - code [ref=e137]: AccelerationMethod
+                    - text: implementing
+                    - ? link "FIDE C.04.7 Baku Acceleration" [ref=e138]
+                        [cursor=pointer]
+                      : - /url: https://handbook.fide.com/chapter/C0407202602
+                    - text: .
+                - paragraph [ref=e139]:
+                    Splits players into two groups (GA = top half, GB = rest)
+                    and adds virtual points to GA players' scores in the first
+                    rounds, causing stronger players to face each other earlier.
+                - generic [ref=e140]:
+                    - code [ref=e141]:
+                        - text:
+                            "import { Tournament, bakuAcceleration } from
+                            '@echecs/tournament';"
+                        - text: "import { pair } from '@echecs/swiss/dutch';"
+                        - text: 'const tournament = new Tournament({'
+                        - text: 'acceleration: bakuAcceleration(players),'
+                        - text: 'pairingSystem: pair,'
+                        - text: players,
+                        - text: 'rounds: 9,'
+                        - text: '});'
+                    - button "Copy" [ref=e142]
+                - paragraph [ref=e143]: 'Virtual points:'
+                - list [ref=e144]:
+                    - listitem [ref=e145]:
+                        - strong [ref=e146]: First half of accelerated rounds
+                        - text: ': GA players get 1 point'
+                    - listitem [ref=e147]:
+                        - strong [ref=e148]: Second half of accelerated rounds
+                        - text: ': GA players get 0.5 points'
+                    - listitem [ref=e149]:
+                        - strong [ref=e150]: After accelerated rounds
+                        - text: ': 0 points'
+                    - listitem [ref=e151]:
+                        - strong [ref=e152]: GB players
+                        - text: ': always 0 points'
+                - paragraph [ref=e153]:
+                    Virtual points affect pairing only — they are never stored
+                    in the game history or reflected in standings.
+                - ? heading "Compatible Pairing Systems Permalink" [level=2]
+                    [ref=e154]
+                  : - text: Compatible Pairing Systems
+                    - link "Permalink" [ref=e155] [cursor=pointer]:
+                        - /url: '#compatible-pairing-systems'
+                - paragraph [ref=e156]:
+                    - text: Any function matching the
+                    - code [ref=e157]: PairingSystem
+                    - text: 'signature works:'
+                - generic [ref=e158]:
+                    - code [ref=e159]:
+                        'type PairingSystem = (players: Player[], games:
+                        Game[][]) => PairingResult;'
+                    - button "Copy" [ref=e160]
+                - table [ref=e161]:
+                    - rowgroup [ref=e162]:
+                        - row "Package Subpath FIDE Rules" [ref=e163]:
+                            - columnheader "Package" [ref=e164]
+                            - columnheader "Subpath" [ref=e165]
+                            - columnheader "FIDE Rules" [ref=e166]
+                    - rowgroup [ref=e167]:
+                        - ? row "@echecs/swiss @echecs/swiss/dutch C.04.3"
+                            [ref=e168]
+                          : - cell "@echecs/swiss" [ref=e169]:
+                                - ? link "@echecs/swiss" [ref=e170]
+                                    [cursor=pointer]
+                                  : - /url: https://www.npmjs.com/package/@echecs/swiss
+                                    - code [ref=e171]: '@echecs/swiss'
+                            - cell "@echecs/swiss/dutch" [ref=e172]:
+                                - code [ref=e173]: '@echecs/swiss/dutch'
+                            - cell "C.04.3" [ref=e174]
+                        - row "@echecs/swiss/dubov C.04.4.1" [ref=e175]:
+                            - cell [ref=e176]
+                            - cell "@echecs/swiss/dubov" [ref=e177]:
+                                - code [ref=e178]: '@echecs/swiss/dubov'
+                            - cell "C.04.4.1" [ref=e179]
+                        - row "@echecs/swiss/burstein C.04.4.2" [ref=e180]:
+                            - cell [ref=e181]
+                            - cell "@echecs/swiss/burstein" [ref=e182]:
+                                - code [ref=e183]: '@echecs/swiss/burstein'
+                            - cell "C.04.4.2" [ref=e184]
+                        - row "@echecs/swiss/lim C.04.4.3" [ref=e185]:
+                            - cell [ref=e186]
+                            - cell "@echecs/swiss/lim" [ref=e187]:
+                                - code [ref=e188]: '@echecs/swiss/lim'
+                            - cell "C.04.4.3" [ref=e189]
+                        - row "@echecs/swiss/double C.04.5" [ref=e190]:
+                            - cell [ref=e191]
+                            - cell "@echecs/swiss/double" [ref=e192]:
+                                - code [ref=e193]: '@echecs/swiss/double'
+                            - cell "C.04.5" [ref=e194]
+                        - row "@echecs/swiss/team C.04.6" [ref=e195]:
+                            - cell [ref=e196]
+                            - cell "@echecs/swiss/team" [ref=e197]:
+                                - code [ref=e198]: '@echecs/swiss/team'
+                            - cell "C.04.6" [ref=e199]
+                        - ? row "@echecs/round-robin @echecs/round-robin C.05"
+                            [ref=e200]
+                          : - cell "@echecs/round-robin" [ref=e201]:
+                                - ? link "@echecs/round-robin" [ref=e202]
+                                    [cursor=pointer]
+                                  : - /url: https://www.npmjs.com/package/@echecs/round-robin
+                                    - code [ref=e203]: '@echecs/round-robin'
+                            - cell "@echecs/round-robin" [ref=e204]:
+                                - code [ref=e205]: '@echecs/round-robin'
+                            - cell "C.05" [ref=e206]
+                - paragraph [ref=e207]:
+                    - text: All subpaths export a
+                    - code [ref=e208]: pair
+                    - text: function conforming to the
+                    - code [ref=e209]: PairingSystem
+                    - text: signature.
+                - heading "Types Permalink" [level=2] [ref=e210]:
+                    - text: Types
+                    - link "Permalink" [ref=e211] [cursor=pointer]:
+                        - /url: '#types'
+                - generic [ref=e212]:
+                    - code [ref=e213]:
+                        - text: 'interface Player {'
+                        - text: 'id: string;'
+                        - text: 'rating?: number;'
+                        - text: '}'
+                        - text: 'interface Game {'
+                        - text: 'black: string;'
+                        - text:
+                            'kind?: GameKind; // optional: classifies unplayed
+                            rounds'
+                        - text: 'result: Result;'
+                        - text: 'white: string;'
+                        - text: '}'
+                        - text: type GameKind =
+                        - text: "| 'forfeit-loss'"
+                        - text: "| 'forfeit-win'"
+                        - text: "| 'full-bye'"
+                        - text: "| 'half-bye'"
+                        - text: "| 'pairing-bye'"
+                        - text: "| 'zero-bye';"
+                        - text: type Result = 0 | 0.5 | 1;
+                        - text: 'interface Pairing {'
+                        - text: 'black: string;'
+                        - text: 'white: string;'
+                        - text: '}'
+                        - text: 'interface Bye {'
+                        - text: 'player: string;'
+                        - text: '}'
+                        - text: 'interface PairingResult {'
+                        - text: 'byes: Bye[];'
+                        - text: 'pairings: Pairing[];'
+                        - text: '}'
+                        - text: 'interface Standing {'
+                        - text: 'player: string;'
+                        - text: 'rank: number;'
+                        - text: 'score: number;'
+                        - text: 'tiebreaks: number[];'
+                        - text: '}'
+                        - text: type Tiebreak = (
+                        - text: 'playerId: string,'
+                        - text: 'games: Game[][],'
+                        - text: 'players: Player[],'
+                        - text: ) => number;
+                    - button "Copy" [ref=e214]
+                - heading "GameKind Validation Permalink" [level=2] [ref=e215]:
+                    - text: GameKind Validation
+                    - link "Permalink" [ref=e216] [cursor=pointer]:
+                        - /url: '#gamekind-validation'
+                - paragraph [ref=e217]:
+                    - text: When
+                    - code [ref=e218]: kind
+                    - text: is provided in
+                    - code [ref=e219]: recordResult
+                    - text: or
+                    - code [ref=e220]: updateResult
+                    - text: ', the'
+                    - code [ref=e221]: result
+                    - text: must match. Mismatches throw
+                    - code [ref=e222]: RangeError
+                    - text: .
+                - table [ref=e223]:
+                    - rowgroup [ref=e224]:
+                        - row "kind Required result FIDE ref" [ref=e225]:
+                            - columnheader "kind" [ref=e226]:
+                                - code [ref=e227]: kind
+                            - columnheader "Required result" [ref=e228]:
+                                - text: Required
+                                - code [ref=e229]: result
+                            - columnheader "FIDE ref" [ref=e230]
+                    - rowgroup [ref=e231]:
+                        - row "forfeit-win 1 Art. 16.2.2" [ref=e232]:
+                            - cell "forfeit-win" [ref=e233]:
+                                - code [ref=e234]: forfeit-win
+                            - cell "1" [ref=e235]:
+                                - code [ref=e236]: '1'
+                            - cell "Art. 16.2.2" [ref=e237]
+                        - row "forfeit-loss 0 Art. 16.2.4" [ref=e238]:
+                            - cell "forfeit-loss" [ref=e239]:
+                                - code [ref=e240]: forfeit-loss
+                            - cell "0" [ref=e241]:
+                                - code [ref=e242]: '0'
+                            - cell "Art. 16.2.4" [ref=e243]
+                        - row "full-bye 1 —" [ref=e244]:
+                            - cell "full-bye" [ref=e245]:
+                                - code [ref=e246]: full-bye
+                            - cell "1" [ref=e247]:
+                                - code [ref=e248]: '1'
+                            - cell "—" [ref=e249]
+                        - row "half-bye 0.5 Art. 16.2.5" [ref=e250]:
+                            - cell "half-bye" [ref=e251]:
+                                - code [ref=e252]: half-bye
+                            - cell "0.5" [ref=e253]:
+                                - code [ref=e254]: '0.5'
+                            - cell "Art. 16.2.5" [ref=e255]
+                        - row "pairing-bye 1 Art. 16.2.1" [ref=e256]:
+                            - cell "pairing-bye" [ref=e257]:
+                                - code [ref=e258]: pairing-bye
+                            - cell "1" [ref=e259]:
+                                - code [ref=e260]: '1'
+                            - cell "Art. 16.2.1" [ref=e261]
+                        - row "zero-bye 0 Art. 16.2.3" [ref=e262]:
+                            - cell "zero-bye" [ref=e263]:
+                                - code [ref=e264]: zero-bye
+                            - cell "0" [ref=e265]:
+                                - code [ref=e266]: '0'
+                            - cell "Art. 16.2.3" [ref=e267]
+                - paragraph [ref=e268]:
+                    - text: When
+                    - code [ref=e269]: kind
+                    - text: is omitted, any result is accepted.
+                - heading "FIDE References Permalink" [level=2] [ref=e270]:
+                    - text: FIDE References
+                    - link "Permalink" [ref=e271] [cursor=pointer]:
+                        - /url: '#fide-references'
+                - list [ref=e272]:
+                    - listitem [ref=e273]:
+                        - ? link "C.07 Play-Off and Tie-Break Regulations"
+                            [ref=e274] [cursor=pointer]
+                          : - /url: https://handbook.fide.com/chapter/TieBreakRegulations032026
+                    - listitem [ref=e275]:
+                        - ? link "C.04.7 Baku Acceleration" [ref=e276]
+                            [cursor=pointer]
+                          : - /url: https://handbook.fide.com/chapter/C0407202602
+                - heading "License Permalink" [level=2] [ref=e277]:
+                    - text: License
+                    - link "Permalink" [ref=e278] [cursor=pointer]:
+                        - /url: '#license'
+                - paragraph [ref=e279]: MIT
+        - generic [ref=e280]:
+            - generic [ref=e281]:
+                - group [ref=e283]:
+                    - generic "Settings" [ref=e284] [cursor=pointer]:
+                        - img [ref=e285]
+                        - heading "Settings" [level=3] [ref=e287]
+                    - option "OS" [selected]
+                    - option "Light"
+                    - option "Dark"
+                - group [ref=e288]:
+                    - generic "On This Page" [ref=e289] [cursor=pointer]:
+                        - img [ref=e290]
+                        - heading "On This Page" [level=3] [ref=e292]
+                    - generic [ref=e293]:
+                        - link "Tournament" [ref=e294] [cursor=pointer]:
+                            - /url: '#tournament'
+                            - generic [ref=e295]: Tournament
+                        - list [ref=e296]:
+                            - listitem [ref=e297]:
+                                - ? link "Installation" [ref=e298]
+                                    [cursor=pointer]
+                                  : - /url: '#installation'
+                                    - generic [ref=e299]: Installation
+                            - listitem [ref=e300]:
+                                - ? link "Quick Start" [ref=e301]
+                                    [cursor=pointer]
+                                  : - /url: '#quick-start'
+                                    - generic [ref=e302]:
+                                        - text: Quick
+                                        - text: Start
+                            - listitem [ref=e303]:
+                                - link "API" [ref=e304] [cursor=pointer]:
+                                    - /url: '#api'
+                                    - generic [ref=e305]: API
+                            - listitem [ref=e306]:
+                                - list [ref=e307]:
+                                    - listitem [ref=e308]:
+                                        - link [ref=e309] [cursor=pointer]:
+                                            - /url: '#_'
+                                    - listitem [ref=e310]:
+                                        - list [ref=e311]:
+                                            - listitem [ref=e312]:
+                                                - ? link [ref=e313]
+                                                    [cursor=pointer]
+                                                  : - /url: '#_-1'
+                                            - listitem [ref=e314]:
+                                                - ? link [ref=e315]
+                                                    [cursor=pointer]
+                                                  : - /url: '#_-2'
+                                            - listitem [ref=e316]:
+                                                - ? link [ref=e317]
+                                                    [cursor=pointer]
+                                                  : - /url: '#_-3'
+                                            - listitem [ref=e318]:
+                                                - ? link [ref=e319]
+                                                    [cursor=pointer]
+                                                  : - /url: '#_-4'
+                                            - listitem [ref=e320]:
+                                                - ? link [ref=e321]
+                                                    [cursor=pointer]
+                                                  : - /url: '#_-5'
+                                            - listitem [ref=e322]:
+                                                - ? link [ref=e323]
+                                                    [cursor=pointer]
+                                                  : - /url: '#_-6'
+                                            - listitem [ref=e324]:
+                                                - ? link / [ref=e325]
+                                                    [cursor=pointer]
+                                                  : - /url: '#_-7'
+                                                    - generic [ref=e326]: /
+                                    - listitem [ref=e327]:
+                                        - link [ref=e328] [cursor=pointer]:
+                                            - /url: '#_-8'
+                            - listitem [ref=e329]:
+                                - ? link "Compatible Pairing Systems" [ref=e330]
+                                    [cursor=pointer]
+                                  : - /url: '#compatible-pairing-systems'
+                                    - generic [ref=e331]:
+                                        - text: Compatible
+                                        - text: Pairing
+                                        - text: Systems
+                            - listitem [ref=e332]:
+                                - link "Types" [ref=e333] [cursor=pointer]:
+                                    - /url: '#types'
+                                    - generic [ref=e334]: Types
+                            - listitem [ref=e335]:
+                                - ? link "GameKind Validation" [ref=e336]
+                                    [cursor=pointer]
+                                  : - /url: '#gamekind-validation'
+                                    - generic [ref=e337]:
+                                        - text: Game
+                                        - text: Kind
+                                        - text: Validation
+                            - listitem [ref=e338]:
+                                - ? link "FIDE References" [ref=e339]
+                                    [cursor=pointer]
+                                  : - /url: '#fide-references'
+                                    - generic [ref=e340]:
+                                        - text: FIDE
+                                        - text: References
+                            - listitem [ref=e341]:
+                                - link "License" [ref=e342] [cursor=pointer]:
+                                    - /url: '#license'
+                                    - generic [ref=e343]: License
+            - navigation [ref=e345]:
+                - ? link "@echecs/tournament - v2.1.0" [ref=e346]
+                    [cursor=pointer]
+                  : - /url: modules.html
+                - list [ref=e347]:
+                    - listitem [ref=e348]:
+                        - ? link "Function bakuAcceleration" [ref=e349]
+                            [cursor=pointer]
+                          : - /url: ./functions/bakuAcceleration.html
+                            - img "Function" [ref=e350]
+                            - generic [ref=e352]:
+                                - text: baku
+                                - text: Acceleration
+                    - listitem [ref=e353]:
+                        - link "Class Tournament" [ref=e354] [cursor=pointer]:
+                            - /url: ./classes/Tournament.html
+                            - img "Class" [ref=e355]
+                            - generic [ref=e357]: Tournament
+                    - listitem [ref=e358]:
+                        - ? link "Type Alias GameKind" [ref=e359]
+                            [cursor=pointer]
+                          : - /url: ./types/GameKind.html
+                            - img "Type Alias" [ref=e360]
+                            - generic [ref=e362]:
+                                - text: Game
+                                - text: Kind
+                    - listitem [ref=e363]:
+                        - link "Type Alias Result" [ref=e364] [cursor=pointer]:
+                            - /url: ./types/Result.html
+                            - img "Type Alias" [ref=e365]
+                            - generic [ref=e367]: Result
+                    - listitem [ref=e368]:
+                        - ? link "Interface AccelerationMethod" [ref=e369]
+                            [cursor=pointer]
+                          : - /url: ./interfaces/AccelerationMethod.html
+                            - img "Interface" [ref=e370]
+                            - generic [ref=e372]:
+                                - text: Acceleration
+                                - text: Method
+                    - listitem [ref=e373]:
+                        - link "Interface Bye" [ref=e374] [cursor=pointer]:
+                            - /url: ./interfaces/Bye.html
+                            - img "Interface" [ref=e375]
+                            - generic [ref=e377]: Bye
+                    - listitem [ref=e378]:
+                        - link "Interface Game" [ref=e379] [cursor=pointer]:
+                            - /url: ./interfaces/Game.html
+                            - img "Interface" [ref=e380]
+                            - generic [ref=e382]: Game
+                    - listitem [ref=e383]:
+                        - link "Interface Pairing" [ref=e384] [cursor=pointer]:
+                            - /url: ./interfaces/Pairing.html
+                            - img "Interface" [ref=e385]
+                            - generic [ref=e387]: Pairing
+                    - listitem [ref=e388]:
+                        - ? link "Interface PairingResult" [ref=e389]
+                            [cursor=pointer]
+                          : - /url: ./interfaces/PairingResult.html
+                            - img "Interface" [ref=e390]
+                            - generic [ref=e392]:
+                                - text: Pairing
+                                - text: Result
+                    - listitem [ref=e393]:
+                        - link "Interface Player" [ref=e394] [cursor=pointer]:
+                            - /url: ./interfaces/Player.html
+                            - img "Interface" [ref=e395]
+                            - generic [ref=e397]: Player
+                    - listitem [ref=e398]:
+                        - link "Interface Standing" [ref=e399] [cursor=pointer]:
+                            - /url: ./interfaces/Standing.html
+                            - img "Interface" [ref=e400]
+                            - generic [ref=e402]: Standing
+                    - listitem [ref=e403]:
+                        - ? link "Interface TournamentOptions" [ref=e404]
+                            [cursor=pointer]
+                          : - /url: ./interfaces/TournamentOptions.html
+                            - img "Interface" [ref=e405]
+                            - generic [ref=e407]:
+                                - text: Tournament
+                                - text: Options
+                    - listitem [ref=e408]:
+                        - ? link "Interface TournamentSnapshot" [ref=e409]
+                            [cursor=pointer]
+                          : - /url: ./interfaces/TournamentSnapshot.html
+                            - img "Interface" [ref=e410]
+                            - generic [ref=e412]:
+                                - text: Tournament
+                                - text: Snapshot
+                    - listitem [ref=e413]:
+                        - ? link "Type Alias PairingSystem" [ref=e414]
+                            [cursor=pointer]
+                          : - /url: ./types/PairingSystem.html
+                            - img "Type Alias" [ref=e415]
+                            - generic [ref=e417]:
+                                - text: Pairing
+                                - text: System
+                    - listitem [ref=e418]:
+                        - ? link "Type Alias Tiebreak" [ref=e419]
+                            [cursor=pointer]
+                          : - /url: ./types/Tiebreak.html
+                            - img "Type Alias" [ref=e420]
+                            - generic [ref=e422]: Tiebreak
+    - contentinfo [ref=e423]:
+        - paragraph [ref=e424]:
+            - text: Generated using
+            - link "TypeDoc" [ref=e425] [cursor=pointer]:
+                - /url: https://typedoc.org/
