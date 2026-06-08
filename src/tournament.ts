@@ -438,8 +438,7 @@ class Tournament {
    * points for missed rounds, paired from next `pair()` call.
    */
   enter(player: Player): void {
-    const existing = this.#data.players.find((p) => p.id === player.id);
-    if (existing) {
+    if (this.#data.players.some((p) => p.id === player.id)) {
       throw new RangeError(`player ${player.id} already registered`);
     }
     this.#data.players.push(player);
