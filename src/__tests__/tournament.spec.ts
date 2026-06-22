@@ -129,7 +129,9 @@ describe('Tournament', () => {
     it('calls onWarning for unresolved tiebreaks', () => {
       const warnings: string[] = [];
       new Tournament(makeData({ tiebreaks: ['BH', 'SB'] }), {
-        onWarning: (message) => warnings.push(message),
+        onWarning: (message) => {
+          warnings.push(message);
+        },
         pairingSystem: mockPairingSystem,
         tiebreaks: { BH: tiebreakZero },
       });
@@ -228,7 +230,9 @@ describe('Tournament', () => {
           totalRounds: 1,
         }),
         {
-          onWarning: (message) => warnings.push(message),
+          onWarning: (message) => {
+            warnings.push(message);
+          },
           pairingSystem: fullByePairingSystem,
         },
       );
@@ -989,7 +993,9 @@ describe('Tournament', () => {
       const events: Record<string, unknown>[] = [];
 
       const t = new Tournament(makeData(), {
-        onTrace: (event) => events.push(event),
+        onTrace: (event) => {
+          events.push(event);
+        },
         pairingSystem: tracingPairingSystem,
       });
       t.pair();
