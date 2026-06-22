@@ -186,6 +186,32 @@ class Tournament {
     }
   }
 
+  #addComment(comment: string): void {
+    if (!this.#data.metadata) {
+      this.#data.metadata = {};
+    }
+    if (!this.#data.metadata.comments) {
+      this.#data.metadata.comments = [];
+    }
+    this.#data.metadata.comments.push(comment);
+  }
+
+  #findGameIndex(
+    games: readonly (Game | Pairing)[],
+    white: string,
+    black: string,
+  ): number {
+    return games.findIndex(
+      (g) =>
+        (g.white === white && g.black === black) ||
+        (g.white === black && g.black === white),
+    );
+  }
+
+  #findPlayer(id: string): Player | undefined {
+    return this.#data.players.find((p) => p.id === id);
+  }
+
   /** All completed rounds. */
   get completedRounds(): readonly CompletedRound[] {
     return this.#completedRounds;
@@ -217,32 +243,6 @@ class Tournament {
   /** Total number of rounds in the tournament. */
   get totalRounds(): number {
     return this.#data.totalRounds;
-  }
-
-  #addComment(comment: string): void {
-    if (!this.#data.metadata) {
-      this.#data.metadata = {};
-    }
-    if (!this.#data.metadata.comments) {
-      this.#data.metadata.comments = [];
-    }
-    this.#data.metadata.comments.push(comment);
-  }
-
-  #findGameIndex(
-    games: readonly (Game | Pairing)[],
-    white: string,
-    black: string,
-  ): number {
-    return games.findIndex(
-      (g) =>
-        (g.white === white && g.black === black) ||
-        (g.white === black && g.black === white),
-    );
-  }
-
-  #findPlayer(id: string): Player | undefined {
-    return this.#data.players.find((p) => p.id === id);
   }
 
   /**
@@ -456,10 +456,10 @@ class Tournament {
    */
   pair(): Pairings {
     if (this.#currentRound) {
-      const allComplete = this.#currentRound.games.every((entry) =>
+      const isAllComplete = this.#currentRound.games.every((entry) =>
         isGame(entry),
       );
-      if (!allComplete) {
+      if (!isAllComplete) {
         throw new RangeError('current round has unrecorded results');
       }
       this.#completedRounds.push({
@@ -595,12 +595,12 @@ class Tournament {
       if (previous === undefined) {
         current.rank = 1;
       } else {
-        const tied =
+        const isTied =
           current.score === previous.score &&
           current.tiebreaks.every(
             (v, index_) => v === (previous?.tiebreaks[index_] ?? 0),
           );
-        current.rank = tied ? previous.rank : index + 1;
+        current.rank = isTied ? previous.rank : index + 1;
       }
 
       // Update Player.rank on the source data
@@ -621,7 +621,9 @@ class Tournament {
    */
   toJSON(): TournamentData {
     const withdrawn =
-      this.#withdrawn.size > 0 ? [...this.#withdrawn].toSorted() : undefined;
+      this.#withdrawn.size > 0
+        ? [...this.#withdrawn].toSorted((a, b) => a.localeCompare(b))
+        : undefined;
     return {
       ...this.#data,
       completedRounds: this.#completedRounds.map((r) => ({
@@ -648,7 +650,9 @@ class Tournament {
       throw new RangeError(`player ${playerId} not found`);
     }
     this.#withdrawn.add(playerId);
-    this.#data.withdrawnPlayers = [...this.#withdrawn].toSorted();
+    this.#data.withdrawnPlayers = [...this.#withdrawn].toSorted((a, b) =>
+      a.localeCompare(b),
+    );
   }
 }
 
